@@ -1,10 +1,10 @@
 package com.example.spartaschedulejpa.controller;
 
-import com.example.spartaschedulejpa.dto.MemberResponseDto;
-import com.example.spartaschedulejpa.dto.SignUpRequestDto;
-import com.example.spartaschedulejpa.dto.SignUpResponseDto;
-import com.example.spartaschedulejpa.dto.UpdateMemberRequestDto;
+import com.example.spartaschedulejpa.common.Const;
+import com.example.spartaschedulejpa.dto.*;
 import com.example.spartaschedulejpa.service.MemberService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,16 +56,29 @@ public class MemberController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-//    @PostMapping("/login")
-//    public String login(
-//            @RequestBody LoginRequestDto dto,
-//            HttpServletRequest request
-//    ) {
-//        LoginResponseDto responseDto =
-//
-//
-//        return "";
-//    }
+    @PostMapping("/login")
+    public String login(
+            @RequestBody LoginRequestDto dto,
+            HttpServletRequest request
+    ) {
+        LoginResponseDto responseDto = memberService.login(dto.getEmail(), dto.getPassword());
+        Long userId = responseDto.getId();
+
+        // 실패시 예외처리
+        if (userId == null) {
+            return "로그인 실패";
+        }
+
+        HttpSession session = request.getSession();
+
+        // 회원 정보 조회
+        MemberResponseDto loginUser = memberService.findById(userId);
+
+        // Session에 로그인 회원 정보를 저장한다.
+        session.setAttribute(Const.LOGIN_USER, loginUser);
+
+        return "로그인 성공";
+    }
 
 
 }

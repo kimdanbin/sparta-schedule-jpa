@@ -1,5 +1,6 @@
 package com.example.spartaschedulejpa.service;
 
+import com.example.spartaschedulejpa.dto.LoginResponseDto;
 import com.example.spartaschedulejpa.dto.MemberResponseDto;
 import com.example.spartaschedulejpa.dto.SignUpResponseDto;
 import com.example.spartaschedulejpa.entity.Member;
@@ -57,8 +58,10 @@ public class MemberService {
         memberRepository.delete(findMember);
     }
 
-//    public LoginResponseDto login(String email, String password) {
-//
-//    }
+    public LoginResponseDto login(String email, String password) {
+        Member member = memberRepository.findIdByEmailAndPasswordOrElseThrow(email, password);
+
+        return new LoginResponseDto(member.getId());
+    }
 
 }
